@@ -34,6 +34,6 @@
 
 * Programming Language: Python 
 
-* Libraries: Qt5 / Qt6
+* Libraries:  PySide6, Qt6 
 
 * File Formats: .rc (for resources), JSON (for game saves and settings)
