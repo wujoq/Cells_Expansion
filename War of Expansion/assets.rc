@@ -1,0 +1,8 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+  <qresource prefix="/idle">
+    <file>assets/free-archer-towers-pixel-art-for-tower-defense/2 Idle/attacking_unit.png</file>
+    <file>assets/free-archer-towers-pixel-art-for-tower-defense/2 Idle/generating_unit.png</file>
+    <file>assets/free-archer-towers-pixel-art-for-tower-defense/2 Idle/support_unit.png</file>
+  </qresource>
+</RCC>
