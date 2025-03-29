@@ -1,30 +1,23 @@
 import sys
-import Cell
-from PySide6.QtWidgets import QApplication, QGraphicsScene, QGraphicsView
-from PySide6.QtCore import QRectF, Qt
-from PySide6.QtGui import QBrush, QPen, QColor
-
-app = QApplication(sys.argv)
-
-# Tworzenie pędzla i pióra
-red_brush = QBrush(QColor(255, 0, 0))  # Czerwony pędzel
-black_pen = QPen(QColor(0, 0, 0))  # Czarny kontur
-
-cell1 = Cell()
+from Event_handler import *
+from PySide6.QtWidgets import QApplication, QGraphicsScene, QGraphicsView, QGraphicsItem
+from PySide6.QtCore import QRectF, Qt, QPointF, QEvent
+from PySide6.QtGui import QBrush, QPen, QColor, QPainter, QMouseEvent
 
 
+class GameView(QGraphicsView):
+    def __init__(self, scene, parent=None):
+        super().__init__(scene, parent)
+        self.setRenderHint(QPainter.Antialiasing)
+        self.setRenderHint(QPainter.SmoothPixmapTransform)
+        self.setDragMode(QGraphicsView.ScrollHandDrag)
 
-# Tworzenie sceny
-scene = QGraphicsScene()
-scene.setSceneRect(QRectF(0, 0, 600, 800))
 
-# Dodanie elipsy (koła) z pędzlem i piórem
-scene.addEllipse(100, 100, 100, 100, black_pen, red_brush)
+if __name__ == "__main__":
+    app = QApplication([])
 
-# Tworzenie widoku i ustawienie rozmiaru
-view = QGraphicsView(scene)
-view.setFixedSize(650, 850)
-view.show()
+    view = GameView(None)
+    scene = EventHandler(view, size=30)
+    view.show()
 
-# Uruchomienie pętli zdarzeń aplikacji
-sys.exit(app.exec_())
+    app.exec()
