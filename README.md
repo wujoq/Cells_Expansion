@@ -1,4 +1,4 @@
-# Cells Expansion Game with Python
+# War of Expansion Game with Python
 ## Project Description
 
 "War of Expansion" is a turn-based strategy game where players control units on a grid-based board, planning moves and attacks to defeat opponents. The project utilizes the Qt framework, including QGraphicsScene and QGraphicsItem, to implement dynamic and interactive gameplay.
@@ -34,6 +34,6 @@
 
 * Programming Language: Python 
 
-* Libraries: Qt5 / Qt6
+* Libraries:  PySide6, Qt6 
 
 * File Formats: .rc (for resources), JSON (for game saves and settings)
