@@ -1,54 +1,119 @@
-from PySide6.QtWidgets import QGraphicsItem, QGraphicsScene, QGraphicsView, QApplication
+from PySide6.QtWidgets import QGraphicsScene, QGraphicsLineItem
 from PySide6.QtCore import QRectF, Qt, QPointF
-from PySide6.QtGui import QBrush, QPen, QFont, QColor, QMouseEvent
-from Cell import *
-from Connections import *
+from PySide6.QtGui import QBrush, QPen, QFont, QColor, QMouseEvent, QTransform
+from Cell import AttackCell, GeneratorCell, SupportCell, Cell
+from Connections_manager import ConnectionsManager
+from Connections import Connection  
+from Army_unit import ArmyUnit  # at the top of the file
+
+
 
 
 class EventHandler(QGraphicsScene):
-    def __init__(self, view, size: int, parent=None):
+    def __init__(self, view=None, size: int = 100, parent=None):
         super().__init__(parent)
         self.view = view
         self.size = size
-        self.player_color = QColor(0, 0, 255)  # Blue for player
-        self.enemy_color = QColor(255, 0, 0)   # Red for enemy
-        self.selected_cell = None  # To track the selected cell for making connections
+        self.selected_unit_type = None  # Typ jednostki z menu (np. "attacking", "generating", "supporting")
+        self.setSceneRect(0, 0, 800, 800)
+        if self.view is not None:
+            self.view.setScene(self)
 
-        self.setSceneRect(-500, -500, 1000, 1000)  # Set an arbitrary scene size
-        self.view.setScene(self)
+        # Wysokość obszaru menu (umieszczonego na dole)
+        self.menu_area_height = 100
 
-    def mousePressEvent(self, event):
-        # Right-click to add player cell
-        if event.button() == Qt.RightButton:
-            self.add_cell(self.player_color, event.scenePos())
+        # Menedżer połączeń
+        self.connections_manager = ConnectionsManager()
+
+        # Atrybuty dla tworzenia połączeń metodą drag-and-drop
+        self.connection_start_cell = None
+        self.connection_preview = None
+
+    def mousePressEvent(self, event: QMouseEvent):
+        pos = event.scenePos()
+        # Jeśli kliknięto w obszarze menu (na dole), przekazujemy zdarzenie dalej
+        if pos.y() > (self.sceneRect().height() - self.menu_area_height):
+            super().mousePressEvent(event)
+            return
+
+        # Jeśli wybrano typ jednostki, wstawiamy nową komórkę – to ma pierwszeństwo
+        if self.selected_unit_type is not None:
+            self.add_cell(QColor("blue"), pos)
+            event.accept()
+            return
+
+        # Jeśli nie wybrano jednostki, sprawdzamy, czy kliknięto na komórce (lewy przycisk) – rozpoczynamy tworzenie połączenia
+        if event.button() == Qt.LeftButton:
+            clicked_item = self.itemAt(pos, self.view.transform() if self.view else QTransform())
+            if isinstance(clicked_item, Cell):
+                self.connection_start_cell = clicked_item
+                # Tworzymy tymczasowy podgląd linii, ustawiając flagę, aby nie reagował na zdarzenia myszy
+                self.connection_preview = QGraphicsLineItem()
+                self.connection_preview.setAcceptedMouseButtons(Qt.NoButton)
+                pen = QPen(QColor(0, 0, 0, 150))
+                pen.setWidth(2)
+                self.connection_preview.setPen(pen)
+                start = QPointF(clicked_item.x() + clicked_item.size / 2, 
+                                clicked_item.y() + clicked_item.size / 2)
+                self.connection_preview.setLine(start.x(), start.y(), pos.x(), pos.y())
+                self.addItem(self.connection_preview)
+                event.accept()
+                return
+
         super().mousePressEvent(event)
 
-    def mouseDoubleClickEvent(self, event):
-        # Left double-click to add enemy cell
-        if event.button() == Qt.RightButton:
-            self.add_cell(self.enemy_color, event.scenePos())
-        super().mouseDoubleClickEvent(event)
+    def mouseMoveEvent(self, event: QMouseEvent):
+        # Aktualizujemy podgląd linii, jeśli trwa przeciąganie połączenia
+        if self.connection_start_cell and self.connection_preview:
+            start = QPointF(self.connection_start_cell.x() + self.connection_start_cell.size / 2,
+                            self.connection_start_cell.y() + self.connection_start_cell.size / 2)
+            pos = event.scenePos()
+            self.connection_preview.setLine(start.x(), start.y(), pos.x(), pos.y())
+            event.accept()
+            return
 
-    def add_cell(self, color: QColor, position: QPointF):
-        """Add a cell of the specified color at the given position."""
-        cell = Cell(self.size, position, color)
-        self.addItem(cell)
+        super().mouseMoveEvent(event)
 
-    def mouseReleaseEvent(self, event):
-        """Handles the cell connection logic after clicking two cells."""
-        clicked_cell = self.itemAt(event.scenePos(), self.view.transform())
+    def mouseReleaseEvent(self, event: QMouseEvent):
+        pos = event.scenePos()
+        # Jeśli kliknięcie nastąpiło w obszarze menu, usuwamy ewentualny podgląd i resetujemy zmienne
+        if pos.y() > (self.sceneRect().height() - self.menu_area_height):
+            if self.connection_preview:
+                self.removeItem(self.connection_preview)
+                self.connection_preview = None
+            self.connection_start_cell = None
+            super().mouseReleaseEvent(event)
+            return
 
-        if isinstance(clicked_cell, Cell):
-            if self.selected_cell:
-                # If a cell is selected, create a connection between the two cells
-                self.create_connection(self.selected_cell, clicked_cell)
-                self.selected_cell.selected = False  # Deselect the previous cell
-                self.selected_cell.update()  # Update previous cell to remove the selection indicator
-                self.selected_cell = None  # Reset selected cell
-            else:
-                # Select the clicked cell
-                clicked_cell.selected = True
-                self.selected_cell = clicked_cell
-                clicked_cell.update()  # Update cell to show selection indicator
+        # Jeśli zwalniamy lewy przycisk po rozpoczęciu przeciągania
+        if self.connection_start_cell and event.button() == Qt.LeftButton:
+            # Najpierw usuwamy podgląd, aby nie przeszkadzał przy wykrywaniu celu
+            if self.connection_preview:
+                self.removeItem(self.connection_preview)
+                self.connection_preview = None
+
+            target_item = self.itemAt(pos, self.view.transform() if self.view else QTransform())
+            if isinstance(target_item, Cell) and target_item is not self.connection_start_cell:
+                self.connections_manager.add_connection(self.connection_start_cell, target_item, self)
+            self.connection_start_cell = None
+            event.accept()
+            
+            return
 
         super().mouseReleaseEvent(event)
+
+    def add_cell(self, color: QColor, position: QPointF):
+        """Dodaje komórkę (tower) wybranego typu w zadanej pozycji."""
+        
+        unit_type = self.selected_unit_type
+        if unit_type == "attacking":
+            cell = AttackCell(self.size, position, color)
+        elif unit_type == "generating":
+            cell = GeneratorCell(self.size, position, color)
+        elif unit_type == "supporting":
+            cell = SupportCell(self.size, position, color)
+        else:
+            return
+        self.addItem(cell)
+        # Po dodaniu jednostki resetujemy wybrany typ
+        self.selected_unit_type = None
