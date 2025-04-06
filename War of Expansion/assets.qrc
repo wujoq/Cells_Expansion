@@ -3,10 +3,16 @@
         <file alias="attacking_unit.png">assets/towers/attacking_unit.png</file>
         <file alias="support_unit.png">assets/towers/support_unit.png</file>
         <file alias="generating_unit.png">assets/towers/generating_unit.png</file>
+        <file alias="attacking_unit_enemy.png">assets/towers/attacking_unit_enemy.png</file>
+        <file alias="generating_unit_enemy.png">assets/towers/generating_unit_enemy.png</file>
+        <file alias="support_unit_enemy.png">assets/towers/support_unit_enemy.png</file>
+        <file alias="1.png">assets/towers/1.png</file>
     </qresource>
     <qresource prefix="/tiles">
         <file alias="FieldsTile_01.png">assets/tiles/FieldsTile_01.png</file>
         <file alias="FieldsTile_38.png">assets/tiles/FieldsTile_38.png</file>
+        <file alias="background.png">assets/tiles/background.png</file>
+        
     </qresource>
     <qresource prefix="/units">
         <file alias="S_Run.png">assets/units/S_Run.png</file>

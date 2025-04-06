@@ -1,10 +1,10 @@
 from PySide6.QtWidgets import QGraphicsScene, QGraphicsLineItem
-from PySide6.QtCore import QRectF, Qt, QPointF
+from PySide6.QtCore import QRectF, Qt, QPointF, QLineF
 from PySide6.QtGui import QBrush, QPen, QFont, QColor, QMouseEvent, QTransform
 from Cell import AttackCell, GeneratorCell, SupportCell, Cell
 from Connections_manager import ConnectionsManager
 from Connections import Connection  
-from Army_unit import ArmyUnit  # at the top of the file
+from Army_unit import ArmyUnit  
 
 
 
@@ -14,40 +14,42 @@ class EventHandler(QGraphicsScene):
         super().__init__(parent)
         self.view = view
         self.size = size
-        self.selected_unit_type = None  # Typ jednostki z menu (np. "attacking", "generating", "supporting")
+        self.selected_unit_type = None  
         self.setSceneRect(0, 0, 800, 800)
         if self.view is not None:
             self.view.setScene(self)
 
-        # Wysokość obszaru menu (umieszczonego na dole)
+        
         self.menu_area_height = 100
 
-        # Menedżer połączeń
+       
         self.connections_manager = ConnectionsManager()
 
-        # Atrybuty dla tworzenia połączeń metodą drag-and-drop
+        
         self.connection_start_cell = None
         self.connection_preview = None
 
     def mousePressEvent(self, event: QMouseEvent):
         pos = event.scenePos()
-        # Jeśli kliknięto w obszarze menu (na dole), przekazujemy zdarzenie dalej
+        
         if pos.y() > (self.sceneRect().height() - self.menu_area_height):
             super().mousePressEvent(event)
             return
 
-        # Jeśli wybrano typ jednostki, wstawiamy nową komórkę – to ma pierwszeństwo
         if self.selected_unit_type is not None:
-            self.add_cell(QColor("blue"), pos)
+            if event.button() == Qt.LeftButton:
+                self.add_cell(QColor("blue"), pos)
+            elif event.button() == Qt.RightButton:
+                self.add_cell(QColor("red"), pos)
             event.accept()
             return
 
-        # Jeśli nie wybrano jednostki, sprawdzamy, czy kliknięto na komórce (lewy przycisk) – rozpoczynamy tworzenie połączenia
+ 
         if event.button() == Qt.LeftButton:
             clicked_item = self.itemAt(pos, self.view.transform() if self.view else QTransform())
             if isinstance(clicked_item, Cell):
                 self.connection_start_cell = clicked_item
-                # Tworzymy tymczasowy podgląd linii, ustawiając flagę, aby nie reagował na zdarzenia myszy
+
                 self.connection_preview = QGraphicsLineItem()
                 self.connection_preview.setAcceptedMouseButtons(Qt.NoButton)
                 pen = QPen(QColor(0, 0, 0, 150))
@@ -63,7 +65,7 @@ class EventHandler(QGraphicsScene):
         super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event: QMouseEvent):
-        # Aktualizujemy podgląd linii, jeśli trwa przeciąganie połączenia
+
         if self.connection_start_cell and self.connection_preview:
             start = QPointF(self.connection_start_cell.x() + self.connection_start_cell.size / 2,
                             self.connection_start_cell.y() + self.connection_start_cell.size / 2)
@@ -76,7 +78,7 @@ class EventHandler(QGraphicsScene):
 
     def mouseReleaseEvent(self, event: QMouseEvent):
         pos = event.scenePos()
-        # Jeśli kliknięcie nastąpiło w obszarze menu, usuwamy ewentualny podgląd i resetujemy zmienne
+ 
         if pos.y() > (self.sceneRect().height() - self.menu_area_height):
             if self.connection_preview:
                 self.removeItem(self.connection_preview)
@@ -85,9 +87,9 @@ class EventHandler(QGraphicsScene):
             super().mouseReleaseEvent(event)
             return
 
-        # Jeśli zwalniamy lewy przycisk po rozpoczęciu przeciągania
+
         if self.connection_start_cell and event.button() == Qt.LeftButton:
-            # Najpierw usuwamy podgląd, aby nie przeszkadzał przy wykrywaniu celu
+        
             if self.connection_preview:
                 self.removeItem(self.connection_preview)
                 self.connection_preview = None
@@ -103,17 +105,30 @@ class EventHandler(QGraphicsScene):
         super().mouseReleaseEvent(event)
 
     def add_cell(self, color: QColor, position: QPointF):
-        """Dodaje komórkę (tower) wybranego typu w zadanej pozycji."""
+        """Dodaje komórkę (tower) wybranego typu w zadanej pozycji — wycentrowaną i nie nachodzącą na inne."""
         
+        cell_radius = self.size / 2
+        center_position = position - QPointF(cell_radius, cell_radius)
+
+  
+        for item in self.items():
+            if isinstance(item, Cell):
+                item_center = item.scenePos() + QPointF(item.size / 2, item.size / 2)
+                distance = QLineF(item_center, position).length()
+                if distance < self.size:  
+                    print("Can't place: overlapping with another cell.")
+                    return  
+
+  
         unit_type = self.selected_unit_type
         if unit_type == "attacking":
-            cell = AttackCell(self.size, position, color)
+            cell = AttackCell(self.size, center_position, color)
         elif unit_type == "generating":
-            cell = GeneratorCell(self.size, position, color)
+            cell = GeneratorCell(self.size, center_position, color)
         elif unit_type == "supporting":
-            cell = SupportCell(self.size, position, color)
+            cell = SupportCell(self.size, center_position, color)
         else:
             return
+
         self.addItem(cell)
-        # Po dodaniu jednostki resetujemy wybrany typ
-        self.selected_unit_type = None
+        self.selected_unit_type = None 
