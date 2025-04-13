@@ -1,0 +1,73 @@
+{
+    "level": 1,
+    "turn": 0,
+    "mode": "LoadFromFile",
+    "ip_address": "C:/Programowanie/Projekty/War of Expansion/last_game_history.xml",
+    "start_time": "2025-04-07T02:24:14.343580",
+    "objects": {
+        "cells": [
+            {
+                "type": "AttackCell",
+                "color": "#0000ff",
+                "x": 350,
+                "y": 250,
+                "army": 17
+            },
+            {
+                "type": "GeneratorCell",
+                "color": "#ff0000",
+                "x": 450,
+                "y": 50,
+                "army": 52
+            },
+            {
+                "type": "AttackCell",
+                "color": "#0000ff",
+                "x": 550,
+                "y": 150,
+                "army": 18
+            },
+            {
+                "type": "SupportCell",
+                "color": "#ff0000",
+                "x": 100,
+                "y": 50,
+                "army": 19
+            },
+            {
+                "type": "AttackCell",
+                "color": "#0000ff",
+                "x": 150,
+                "y": 150,
+                "army": 18
+            }
+        ],
+        "connections": [
+            {
+                "from_x": 350,
+                "from_y": 250,
+                "to_x": 450,
+                "to_y": 50
+            },
+            {
+                "from_x": 450,
+                "from_y": 50,
+                "to_x": 150,
+                "to_y": 150
+            },
+            {
+                "from_x": 450,
+                "from_y": 50,
+                "to_x": 150,
+                "to_y": 150
+            },
+            {
+                "from_x": 450,
+                "from_y": 50,
+                "to_x": 550,
+                "to_y": 150
+            }
+        ],
+        "build_spots": []
+    }
+}
