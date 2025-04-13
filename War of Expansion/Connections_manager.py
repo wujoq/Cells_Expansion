@@ -68,3 +68,11 @@ class ConnectionsManager:
             if connection.scene():
                 connection.scene().removeItem(connection)
         self.connections.clear()
+    def spawn_connection_animation(self, cell1, cell2, scene):
+        existing = self.get_connection(cell1, cell2)
+        if not existing:
+            conn = Connection(cell1, cell2, self)
+            self.connections.append(conn)
+            scene.addItem(conn)
+            cell1.connections.append(cell2)
+            cell2.connections.append(cell1)

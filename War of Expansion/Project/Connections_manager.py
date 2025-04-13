@@ -15,34 +15,43 @@ class ConnectionsManager:
                 return
             scene.player_connection_used = True
 
-        if len(cell1.connections) >= 3:
-            print("❌ Cell 1 reached max connections.")
-            return
-        if len(cell2.connections) >= 3:
-            print("❌ Cell 2 reached max connections.")
-            return
-
         if isinstance(cell1, SupportCell) or isinstance(cell2, SupportCell):
             return
         if isinstance(cell1, GeneratorCell) and cell2.is_enemy(cell1.color):
             return
 
-        is_enemy_pair = cell1.is_enemy(cell2.color) or cell2.is_enemy(cell1.color)
+        # ✅ Limit only outgoing connections from cell1
+        if self.count_sending_connections(cell1) >= 3:
+            print(f"❌ {cell1} reached max outgoing connections.")
+            return
 
-        exists_1_to_2 = any(c.cell1 == cell1 and c.cell2 == cell2 for c in self.connections)
-        exists_2_to_1 = any(c.cell1 == cell2 and c.cell2 == cell1 for c in self.connections)
+        # Find or reuse an existing visual connection
+        existing_connection = self.get_connection(cell1, cell2)
 
-        if not exists_1_to_2:
-            conn1 = Connection(cell1, cell2, self)
-            self.connections.append(conn1)
-            scene.addItem(conn1)
+        if existing_connection:
+            existing_connection.enable_sending_from(cell1)
+        else:
+            conn = Connection(cell1, cell2, self)
+            self.connections.append(conn)
+            scene.addItem(conn)
+            conn.enable_sending_from(cell1)
             cell1.connections.append(cell2)
-
-        if is_enemy_pair and not exists_2_to_1:
-            conn2 = Connection(cell2, cell1, self)
-            self.connections.append(conn2)
-            scene.addItem(conn2)
             cell2.connections.append(cell1)
+
+    def get_connection(self, cell1, cell2):
+        for conn in self.connections:
+            if (conn.cell1 == cell1 and conn.cell2 == cell2) or (conn.cell1 == cell2 and conn.cell2 == cell1):
+                return conn
+        return None
+
+    def count_sending_connections(self, cell):
+        count = 0
+        for conn in self.connections:
+            if conn.cell1 == cell and conn.sending_from_cell1:
+                count += 1
+            elif conn.cell2 == cell and conn.sending_from_cell2:
+                count += 1
+        return count
 
     def remove_connection(self, connection):
         if connection in self.connections:
@@ -55,7 +64,15 @@ class ConnectionsManager:
 
     def clear_connections(self):
         for connection in self.connections:
-            connection.sendingTimer.stop()
+            connection.stop_all_sending()
             if connection.scene():
                 connection.scene().removeItem(connection)
         self.connections.clear()
+    def spawn_connection_animation(self, cell1, cell2, scene):
+        existing = self.get_connection(cell1, cell2)
+        if not existing:
+            conn = Connection(cell1, cell2, self)
+            self.connections.append(conn)
+            scene.addItem(conn)
+            cell1.connections.append(cell2)
+            cell2.connections.append(cell1)
