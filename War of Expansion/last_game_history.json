@@ -1,0 +1,55 @@
+{
+    "level": 2,
+    "turn": 0,
+    "mode": "Single Player",
+    "ip_address": "N/A",
+    "start_time": "2025-04-16T21:59:18.053553",
+    "objects": {
+        "cells": [
+            {
+                "type": "GeneratorCell",
+                "color": "#ff0000",
+                "x": 650,
+                "y": 250,
+                "army": 256
+            },
+            {
+                "type": "AttackCell",
+                "color": "#0000ff",
+                "x": 150,
+                "y": 250,
+                "army": 28
+            },
+            {
+                "type": "AttackCell",
+                "color": "#0000ff",
+                "x": 190,
+                "y": 250,
+                "army": 86
+            },
+            {
+                "type": "GeneratorCell",
+                "color": "#0000ff",
+                "x": 450,
+                "y": 300,
+                "army": 216
+            },
+            {
+                "type": "GeneratorCell",
+                "color": "#0000ff",
+                "x": 550,
+                "y": 50,
+                "army": 209
+            },
+            {
+                "type": "AttackCell",
+                "color": "#0000ff",
+                "x": 50,
+                "y": 250,
+                "army": 7
+            }
+        ],
+        "connections": [],
+        "build_spots": []
+    }
+}

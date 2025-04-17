@@ -1,0 +1,56 @@
+<?xml version="1.0" ?>
+<GameHistory>
+  <Level>1</Level>
+  <Turn>0</Turn>
+  <Mode>Network Game Host</Mode>
+  <IPAddress>N/A</IPAddress>
+  <StartTime>2025-04-14T21:36:44.952211</StartTime>
+  <Objects>
+    <Cells>
+      <Cell>
+        <Type>AttackCell</Type>
+        <Color>#00ff00</Color>
+        <X>150</X>
+        <Y>150</Y>
+        <Army>22</Army>
+      </Cell>
+      <Cell>
+        <Type>AttackCell</Type>
+        <Color>#00ff00</Color>
+        <X>350</X>
+        <Y>250</Y>
+        <Army>22</Army>
+      </Cell>
+      <Cell>
+        <Type>AttackCell</Type>
+        <Color>#00ff00</Color>
+        <X>550</X>
+        <Y>150</Y>
+        <Army>15</Army>
+      </Cell>
+      <Cell>
+        <Type>AttackCell</Type>
+        <Color>#ff0000</Color>
+        <X>450</X>
+        <Y>50</Y>
+        <Army>15</Army>
+      </Cell>
+      <Cell>
+        <Type>AttackCell</Type>
+        <Color>#ff0000</Color>
+        <X>100</X>
+        <Y>50</Y>
+        <Army>20</Army>
+      </Cell>
+    </Cells>
+    <Connections>
+      <Connection>
+        <FromX>550</FromX>
+        <FromY>150</FromY>
+        <ToX>450</ToX>
+        <ToY>50</ToY>
+      </Connection>
+    </Connections>
+    <BuildSpots/>
+  </Objects>
+</GameHistory>

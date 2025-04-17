@@ -1,0 +1,56 @@
+<?xml version="1.0" ?>
+<GameHistory>
+  <Level>2</Level>
+  <Turn>0</Turn>
+  <Mode>Single Player</Mode>
+  <IPAddress>N/A</IPAddress>
+  <StartTime>2025-04-16T21:59:18.054980</StartTime>
+  <Objects>
+    <Cells>
+      <Cell>
+        <Type>GeneratorCell</Type>
+        <Color>#ff0000</Color>
+        <X>650</X>
+        <Y>250</Y>
+        <Army>256</Army>
+      </Cell>
+      <Cell>
+        <Type>AttackCell</Type>
+        <Color>#0000ff</Color>
+        <X>150</X>
+        <Y>250</Y>
+        <Army>28</Army>
+      </Cell>
+      <Cell>
+        <Type>AttackCell</Type>
+        <Color>#0000ff</Color>
+        <X>190</X>
+        <Y>250</Y>
+        <Army>86</Army>
+      </Cell>
+      <Cell>
+        <Type>GeneratorCell</Type>
+        <Color>#0000ff</Color>
+        <X>450</X>
+        <Y>300</Y>
+        <Army>216</Army>
+      </Cell>
+      <Cell>
+        <Type>GeneratorCell</Type>
+        <Color>#0000ff</Color>
+        <X>550</X>
+        <Y>50</Y>
+        <Army>209</Army>
+      </Cell>
+      <Cell>
+        <Type>AttackCell</Type>
+        <Color>#0000ff</Color>
+        <X>50</X>
+        <Y>250</Y>
+        <Army>7</Army>
+      </Cell>
+    </Cells>
+    <Connections/>
+    <BuildSpots/>
+  </Objects>
+</GameHistory>

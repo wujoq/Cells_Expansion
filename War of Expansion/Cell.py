@@ -25,11 +25,9 @@ class Cell(QGraphicsItem):
         self.update()
 
 
-    def is_enemy(self, color):
-        self.isenemy = False
-        if self.color != color:
-            self.isenemy = True
-        return self.isenemy
+    def is_enemy(self, other_color):
+         return self.color.name().lower() != other_color.name().lower()
+
 
     def shape(self):
         path = QPainterPath()
@@ -166,8 +164,9 @@ class AttackCell(AnimatedCell):
         painter.drawText(army_rect, Qt.AlignCenter, str(self.army))
 
 class SupportCell(AnimatedCell):
-    def __init__(self, size: int, position: QPointF, color: QColor, frame_count: int = 4):
-        resource_path = ":/towers/support_unit.png"
+    def __init__(self, size: int, position: QPointF, color: QColor, frame_count: int = 4, resource_path: str = None):
+        if resource_path is None:
+            resource_path = ":/towers/support_unit.png"
         super().__init__(size, position, color, resource_path, frame_count)
         self.price = 30
         self.radius = 100 
@@ -202,8 +201,9 @@ class SupportCell(AnimatedCell):
         painter.drawEllipse(center, self.radius, self.radius)
 
 class GeneratorCell(AnimatedCell):
-    def __init__(self, size: int, position: QPointF, color: QColor):
-        resource_path = ":/towers/generating_unit.png"
+    def __init__(self, size: int, position: QPointF, color: QColor, resource_path: str = None):
+        if resource_path is None:
+            resource_path = ":/towers/generating_unit.png"
         super().__init__(size, position, color, resource_path)
         self.boosted = False
 
