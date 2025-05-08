@@ -20,7 +20,7 @@
 * Combat system – including levels, unit multiplication, and special battle effects.
 
 * Turn-based mechanism and timer – round timer limiting the time for each move.
-
+## In the future
 * Strategic hints system – AI-based suggestions for the best move in a turn.
 
 * Gesture-based control – units can be controlled with hand gestures detected by a camera.
